@@ -8,12 +8,11 @@ Users will be able to
 - Users can sort items into catagories. 
 - Provide up-to-date information on inventory levels. Set par levels for each item in your inventory, ensuring that you never run out of critical items or overstock unnecessarily
 - When items reach their par levels, the app will automatically generate optimized purchase orders
-- Get valuable insights, identify high-demand items, track slow-moving stock, and optimize your inventory strategy with comprehensive reports
 
 // Stretch Goals 🏆
 - Receive alerts when stock becomes low and when order dates come up
 - Email alerts to Users
-- Connect and see other locations' and their stock
+- Get valuable insights, identify high-demand items, track slow-moving stock, and optimize your inventory strategy with comprehensive reports
 
 ## Database Schema 📝
 
