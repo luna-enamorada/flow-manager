@@ -60,10 +60,10 @@ __Many to many relationships__
 | /category_tags/:id| DELETE              	|                                                              	    | { }                                                                	|
 
 ## Component Hierarchy  
-![Alt text](image-2.png)
+<img src=imgs/components.png>
 
 ## WireFrame 
-![Alt text](image-1.png)
+<img src=imgs/Manage_Flow_WireFrame.png>
 
 ## Kanban Board
-![Alt text](image.png)
+<img src=imgs/trello.png>
