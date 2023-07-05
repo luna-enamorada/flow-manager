@@ -8,7 +8,7 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, Budget, OrderDetail, Order, Item, CategoryTag, Category, Stock
+from models import db, User, Budget, OrderDetail, Order, Item, Category, Stock
 
 if __name__ == '__main__':
     fake = Faker()
@@ -20,7 +20,6 @@ if __name__ == '__main__':
         OrderDetail.query.delete()
         Order.query.delete()
         Item.query.delete()
-        CategoryTag.query.delete()
         Category.query.delete()
         Stock.query.delete()
 
@@ -40,7 +39,7 @@ if __name__ == '__main__':
         db.session.add(b)
         db.session.commit()
 
-        od = OrderDetail(
+        od = Order(
             total = 9000,
             user_id = 1
         )
@@ -51,27 +50,30 @@ if __name__ == '__main__':
             name = 'caramel',
             price = 7,
             par_level = 10,
-            user_id = 1
+            user_id = 1,
+            category_id = 1
         )
 
         i2 = Item(
             name = 'mocha',
             price = 5,
             par_level = 10,
-            user_id = 1
+            user_id = 1,
+            category_id = 1
         )
 
         i3 = Item(
             name = 'turtle',
             price = 8,
             par_level = 7,
-            user_id = 1
+            user_id = 1,
+            category_id = 1
         )
 
         db.session.add_all([ i1, i2, i3 ])
         db.session.commit()
 
-        o = Order(
+        o = OrderDetail(
             quantity = 21,
             item_id = 1,
             order_id = 1
@@ -83,23 +85,6 @@ if __name__ == '__main__':
             name = 'syrup'
         )
         db.session.add(c1)
-        db.session.commit()
-
-        ct1 = CategoryTag(
-            item_id = 1,
-            category_id = 1
-        )
-
-        ct2 = CategoryTag(
-            item_id = 2,
-            category_id = 1
-        )
-
-        ct3 = CategoryTag(
-            item_id = 3,
-            category_id = 1
-        )
-        db.session.add_all([ ct1, ct2, ct3 ])
         db.session.commit()
 
         s1 = Stock(
