@@ -18,6 +18,7 @@ class User( db.Model, SerializerMixin ):
         '-order_detail.user',
         '-item.user',
         '-stock.user',
+        '-'
         '-updated_at',
     )
 
