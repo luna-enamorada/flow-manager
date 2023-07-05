@@ -46,13 +46,7 @@ if __name__ == '__main__':
         db.session.add(od)
         db.session.commit()
 
-        i1 = Item(
-            name = 'caramel',
-            price = 7,
-            par_level = 10,
-            user_id = 1,
-            category_id = 1
-        )
+        i1 = Item( name = 'caramel', price = 7, par_level = 10, user_id = 1, category_id = 1 )
 
         i2 = Item(
             name = 'mocha',

@@ -19,11 +19,7 @@ class User( db.Model, SerializerMixin ):
         '-item.user',
         '-stock.user',
         '-updated_at',
-        '-budget.user.budget',
-        '-order.user.order',
-        '-item.user.item',
-        '-stock.user.stock'
-    )
+        )
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -73,7 +69,6 @@ class Budget( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-user.budget',
-        '-user.budget.user',
         '-created_at',
         '-updated_at',
     )
@@ -106,8 +101,6 @@ class Order( db.Model, SerializerMixin ):
     serialize_rules = (
         '-order_detail.order',
         '-user.order',
-        '-order_detail.order.order_detail',
-        '-user.order.user',
         '-created_at',
         '-updated_at',
     )
@@ -142,8 +135,6 @@ class OrderDetail( db.Model, SerializerMixin ):
     serialize_rules = (
         '-order.order_detail',
         '-item.order_detail',
-        '-order.order_detail.order',
-        '-item.order_detail.item',
         '-created_at',
         '-updated_at',
     )
@@ -179,10 +170,6 @@ class Item( db.Model, SerializerMixin ):
         '-stock.item',
         '-order_detail.item',
         '-category.item',
-        '-user.item.user',
-        '-stock.item.stock',
-        '-order_detail.item.order_detail',
-        '-category.item.category',
         '-created_at',
         '-updated_at',
     )
@@ -221,7 +208,6 @@ class Category( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-item.category',
-        '-item.category.item',
         '-created_at',
         '-updated_at',
     )
@@ -251,8 +237,6 @@ class Stock( db.Model, SerializerMixin ):
     serialize_rules = (
         'item.stock',
         'user.stock',
-        'item.stock.item',
-        'user.stock.user',
         '-created_at',
     )
 
