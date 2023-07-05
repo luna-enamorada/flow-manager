@@ -7,7 +7,7 @@ from config import db, bcrypt
 
 
 # ~~~~~~~~~~~~~~~~~~~ Model Tables ~~~~~~~~~~~~~~~~~~~
-# User, Budget, OrderDetail, Order, Item, CategoryTag, Category, Stock
+# User, Budget, OrderDetail, Order, Item, Category, Stock
 
 # ~~~~~~~~~~~~~~~~~~~ User Table ~~~~~~~~~~~~~~~~~~~
 class User( db.Model, SerializerMixin ):
@@ -15,11 +15,14 @@ class User( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-budget.user',
-        '-order_detail.user',
+        '-order.user',
         '-item.user',
         '-stock.user',
-        '-'
         '-updated_at',
+        '-budget.user.budget',
+        '-order.user.order',
+        '-item.user.item',
+        '-stock.user.stock'
     )
 
     id = db.Column(db.Integer, primary_key=True)
@@ -33,11 +36,10 @@ class User( db.Model, SerializerMixin ):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     
     #### relationships
-    budget = db.relationship( 'Budget', back_populates = 'user' )
-    order_detail = db.relationship( 'OrderDetail', back_populates = 'user', cascade = 'all, delete-orphan' )
-    order = association_proxy( 'order_detail', 'order' )
-    item = db.relationship( 'Item', back_populates = 'user' )
-    stock = db.relationship( 'Stock', back_populates = 'user' )
+    budget = db.relationship( 'Budget', back_populates = 'user', cascade = 'all, delete-orphan' )
+    order = db.relationship( 'Order', back_populates = 'user', cascade = 'all, delete-orphan' )
+    item = db.relationship( 'Item', back_populates = 'user', cascade = 'all, delete-orphan' )
+    stock = db.relationship( 'Stock', back_populates = 'user', cascade = 'all, delete-orphan' )
 
     @classmethod
     def find(cls, id):
@@ -71,6 +73,7 @@ class Budget( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-user.budget',
+        '-user.budget.user',
         '-created_at',
         '-updated_at',
     )
@@ -95,14 +98,16 @@ class Budget( db.Model, SerializerMixin ):
         return f"<Budget: {self.budget}>"
 
 
-# ~~~~~~~~~~~~~~~~~~~ OrderDetail Table ~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~ Order Table ~~~~~~~~~~~~~~~~~~~
 
-class OrderDetail( db.Model, SerializerMixin ):
-    __tablename__ = 'order_details'
+class Order( db.Model, SerializerMixin ):
+    __tablename__ = 'orders'
 
     serialize_rules = (
-        '-order.order_detail',
-        '-user.order_detail',
+        '-order_detail.order',
+        '-user.order',
+        '-order_detail.order.order_detail',
+        '-user.order.user',
         '-created_at',
         '-updated_at',
     )
@@ -116,27 +121,29 @@ class OrderDetail( db.Model, SerializerMixin ):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     #### relationships
-    order = db.relationship( 'Order', back_populates = 'order_detail', cascade = 'all, delete-orphan'  )
-    user = db.relationship( 'User', back_populates = 'order_detail' )
-    item = association_proxy( 'order', 'item' )
+    order_detail = db.relationship( 'OrderDetail', back_populates = 'order', cascade = 'all, delete-orphan'  )
+    user = db.relationship( 'User', back_populates = 'order' )
+    item = association_proxy( 'order_detail', 'item' )
 
     @classmethod
     def find(cls, id):
-        order_detail = OrderDetail.query.filter(OrderDetail.id == id).first()
-        return order_detail
+        order = Order.query.filter(Order.id == id).first()
+        return order
 
     def __repr__(self):
         return f"<OrderDetail: Total: {self.total}>"
 
 
-# ~~~~~~~~~~~~~~~~~~~ Order Table ~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~ OrderDetail Table ~~~~~~~~~~~~~~~~~~~
 
-class Order( db.Model, SerializerMixin ):
-    __tablename__ = 'orders'
+class OrderDetail( db.Model, SerializerMixin ):
+    __tablename__ = 'order_details'
 
     serialize_rules = (
-        '-order_detail.order',
-        '-item.order',
+        '-order.order_detail',
+        '-item.order_detail',
+        '-order.order_detail.order',
+        '-item.order_detail.item',
         '-created_at',
         '-updated_at',
     )
@@ -145,20 +152,19 @@ class Order( db.Model, SerializerMixin ):
     quantity = db.Column(db.Integer, nullable=False)
 
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
-    order_id = db.Column(db.Integer, db.ForeignKey('order_details.id'), nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     #### relationships
-    order_detail = db.relationship( 'OrderDetail', back_populates = 'order' )
-    # user = association_proxy( 'order_detail', 'user' )
-    item = db.relationship( 'Item', back_populates = 'order' )
+    order = db.relationship( 'Order', back_populates = 'order_detail' )
+    item = db.relationship( 'Item', back_populates = 'order_detail' )
 
     @classmethod
     def find(cls, id):
-        order = Order.query.filter(Order.id == id).first()
-        return order
+        order_detail = OrderDetail.query.filter(OrderDetail.id == id).first()
+        return order_detail
 
     def __repr__(self):
         return f"<Order quantity: {self.quantity}>"
@@ -170,8 +176,13 @@ class Item( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-user.item',
-        '-category_tag.item',
         '-stock.item',
+        '-order_detail.item',
+        '-category.item',
+        '-user.item.user',
+        '-stock.item.stock',
+        '-order_detail.item.order_detail',
+        '-category.item.category',
         '-created_at',
         '-updated_at',
     )
@@ -183,17 +194,17 @@ class Item( db.Model, SerializerMixin ):
     par_level = db.Column(db.Integer, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     #### relationships
     user = db.relationship( 'User', back_populates = 'item')
-    category_tag = db.relationship( 'CategoryTag', back_populates = 'item', cascade = 'all, delete-orphan' )
-    # category = association_proxy( 'category_tag', 'category' )
     stock = db.relationship( 'Stock', back_populates = 'item' )
-    order = db.relationship( 'Order', back_populates = 'item', cascade = 'all, delete-orphan' )
-    order_detail = association_proxy( 'OrderDetail', 'order_detail' )
+    order_detail = db.relationship( 'OrderDetail', back_populates = 'item', cascade = 'all, delete-orphan' )
+    order = association_proxy( 'order_detail', 'order' )
+    category = db.relationship( 'Category', back_populates = 'item' )
 
     @classmethod
     def find(cls, id):
@@ -203,45 +214,14 @@ class Item( db.Model, SerializerMixin ):
     def __repr__(self):
         return f"<Item: {self.name}>"
 
-# ~~~~~~~~~~~~~~~~~~~ CategoryTag Table ~~~~~~~~~~~~~~~~~~~
-
-class CategoryTag( db.Model, SerializerMixin ):
-    __tablename__ = 'category_tags'
-
-    serialize_rules = ( 
-        '-item.category_tag', 
-        '-category.category_tag', 
-        '-created_at',
-        '-updated_at',
-        )
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
-
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
-
-    #### relationships
-    item = db.relationship( 'Item', back_populates = 'category_tag')
-    category = db.relationship( 'Category', back_populates = 'category_tag' )
-
-    @classmethod
-    def find(cls, id):
-        item = Item.query.filter(Item.id == id).first()
-        return item
-
-    def __repr__(self):
-        return f"<Item {self.item_id} tagged with {self.category_id}>"
-
 # ~~~~~~~~~~~~~~~~~~~ Category Table ~~~~~~~~~~~~~~~~~~~
 
 class Category( db.Model, SerializerMixin ):
     __tablename__ = 'categories'
 
     serialize_rules = (
-        '-category_tag.category',
+        '-item.category',
+        '-item.category.item',
         '-created_at',
         '-updated_at',
     )
@@ -253,8 +233,7 @@ class Category( db.Model, SerializerMixin ):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     #### relationships
-    category_tag = db.relationship( 'CategoryTag', back_populates = 'category', cascade = 'all, delete-orphan' )
-    item = association_proxy( 'category_tag', 'item' )
+    item = db.relationship( 'Item', back_populates = 'category' )
 
     @classmethod
     def find(cls, id):
@@ -272,6 +251,8 @@ class Stock( db.Model, SerializerMixin ):
     serialize_rules = (
         'item.stock',
         'user.stock',
+        'item.stock.item',
+        'user.stock.user',
         '-created_at',
     )
 
