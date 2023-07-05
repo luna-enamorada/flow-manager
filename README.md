@@ -16,7 +16,7 @@ Users will be able to
 
 ## Database Schema 📝
 
-<img src=imgs/manage-flow-db.png>
+<img src=imgs/dbmanage-flow.png>
 
 ### Database Relationships
 
