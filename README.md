@@ -24,15 +24,14 @@ __1 to many relationships:__
 - 1 User can have many Orders
 - 1 User can have many Items
 - 1 User can have many Stocks
+- 1 Order can have many 1 Order_Details
 
 __1 to 1 relationships__
 - 1 Item can only have 1 Stock and 1 Stock only belongs to 1 Item
-- 1 Order can only have 1 Order_Details
 - 1 User can only have 1 Budget
 
 __Many to many relationships__
 - One Order can have many Items and one Item can be apart of many Orders.
-- One Category can have many Items and one Item can be apart of many Categories.
 
 
 ## API Routes
@@ -61,6 +60,16 @@ __Many to many relationships__
 
 ## Component Hierarchy  
 <img src=imgs/components.png>
+
+| API Route           	| Component        	|
+|---------------------	|------------------	|
+| /                     | Login/Signup.js   |
+| /search               | Search.js         |
+| /inventory          	| ItemCollection.js |
+| /order            	| OrderPage.js      |
+| /home                 | Profile.js        |
+| /category             | CategoryCard.js   |
+
 
 ## WireFrame 
 <img src=imgs/Manage_Flow_WireFrame.png>
