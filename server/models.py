@@ -15,9 +15,16 @@ class User( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-budget.user',
+        '-order.item',
+        '-order.order_detail',
         '-order.user',
         '-item.user',
+        '-item.stock',
+        '-item.order',
+        '-item.order_detail',
+        '-item.category',
         '-stock.user',
+        '-stock.item'
         '-updated_at',
         )
 
@@ -69,6 +76,11 @@ class Budget( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-user.budget',
+        '-user.order',
+        '-user.item',
+        '-user.stock',
+        '-user._password_hash',
+        '-user.updated_at',
         '-created_at',
         '-updated_at',
     )
@@ -100,7 +112,18 @@ class Order( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-order_detail.order',
+        '-order_details.item',
+        '-order_detail.item.user',
+        '-order_detail.item.stock',
+        '-order_detail.item.order',
+        '-order_detail.item.order_detail',
+        '-order_detail.item.category',
+        '-user.budget',
         '-user.order',
+        '-user.item',
+        '-user.stock',
+        '-user._password_hash',
+        '-user.updated_at',
         '-created_at',
         '-updated_at',
     )
@@ -134,7 +157,19 @@ class OrderDetail( db.Model, SerializerMixin ):
 
     serialize_rules = (
         '-order.order_detail',
+        '-order.user',
+        '-order.item'
+        '-order.user.budget',
+        '-order.user.order',
+        '-order.user.item',
+        '-order.user.stock',
+        '-order.user._password_hash',
+        '-order.user.updated_at',
+        '-item.user',
+        '-item.stock',
+        '-item.order',
         '-item.order_detail',
+        '-item.category',
         '-created_at',
         '-updated_at',
     )
@@ -166,11 +201,35 @@ class Item( db.Model, SerializerMixin ):
     __tablename__ = 'items'
 
     serialize_rules = (
+        '-user.budget',
+        '-user.order',
         '-user.item',
+        '-user.stock',
+        '-user._password_hash',
+        '-user.updated_at',
+
         '-stock.item',
+        '-stock.user'
+
         '-order_detail.item',
+        '-order_detail.order', 
+        '-order_detail.item.user',
+        '-order_detail.item.stock',
+        '-order_detail.item.order',
+        '-order_detail.item.order_detail',
+        '-order_detail.item.category',
+
+        'order_detail.order.order_detail',
+        'order_detail.order.user',
+        'order_detail.order.item',
+
         '-category.item',
-        '-created_at',
+        '-category.item.user',
+        '-category.item.stock',
+        '-category.item.order',
+        '-category.item.order_detail',
+        '-category.item.category',
+
         '-updated_at',
     )
 
@@ -207,6 +266,10 @@ class Category( db.Model, SerializerMixin ):
     __tablename__ = 'categories'
 
     serialize_rules = (
+        '-item.user',
+        '-item.stock',
+        '-item.order',
+        '-item.order_detail',
         '-item.category',
         '-created_at',
         '-updated_at',
@@ -235,8 +298,17 @@ class Stock( db.Model, SerializerMixin ):
     __tablename__ = 'stocks'
 
     serialize_rules = (
-        'item.stock',
-        'user.stock',
+        '-item.user',
+        '-item.stock',
+        '-item.order',
+        '-item.order_detail',
+        '-item.category',
+        '-user.budget',
+        '-user.order',
+        '-user.item',
+        '-user.stock',
+        '-user._password_hash',
+        '-user.updated_at',
         '-created_at',
     )
 

@@ -66,12 +66,19 @@ api.add_resource(Login, '/login')
 
 
 
+class Users( Resource ):
+    def get(self):
+        users = [ user.to_dict() for user in User.query.all() ]
+        response = make_response( users, 200 )
+        return response
+
+api.add_resource( Users, '/users')
 
 
 
 class Items( Resource ):
     def get(self):
-        items = [ item.to_dict(only = ("id", "name", "price", "par_level", "user_id", "category_id" )) for item in Item.query.all() ]
+        items = [ item.to_dict() for item in Item.query.all() ]
         response = make_response( items, 200 )
         return response
 
@@ -100,7 +107,7 @@ api.add_resource( Items, '/items')
 class ItemsByID( Resource ):
     def get( self, id ):
         try:
-            item = Item.find(id).to_dict( only = ("id", "name", "price", "par_level", "user_id", "category_id" ))
+            item = Item.find(id).to_dict( )
             response = make_response( item, 200 )
             return response
         except:
@@ -120,7 +127,7 @@ class ItemsByID( Resource ):
             db.session.commit()
 
 
-            item_dict = item.to_dict( only = ("id", "name", "price", "par_level", "user_id", "category_id" ) )
+            item_dict = item.to_dict(  )
             response = make_response( item_dict, 200 )
             return response
 
@@ -260,7 +267,7 @@ api.add_resource( OrderByID, '/orders/<int:id>' )
 
 class Budgets( Resource ):
     def get(self):
-        budgets = [ b.to_dict() for b in Budgets.query.all() ]
+        budgets = [ b.to_dict() for b in Budget.query.all() ]
         response = make_response( budgets, 200 )
         return response
 
@@ -268,7 +275,7 @@ class Budgets( Resource ):
     def post( self ):
         rq = request.get_json()
         try:
-            new_budget = Budgets(
+            new_budget = Budget(
                 budget = rq['budget'] ,
                 user_id = rq['user_id'],
             )
@@ -330,6 +337,30 @@ class BudgetByID( Resource ):
 api.add_resource( BudgetByID, '/budgets/<int:id>' )
 
 ## stocks
+class Stocks( Resource ):
+    def get(self):
+        stocks = [ b.to_dict() for b in Stock.query.all() ]
+        response = make_response( stocks, 200 )
+        return response
+
+
+    def post( self ):
+        rq = request.get_json()
+        try:
+            new_stock = Stock(
+                stock = rq['stock'] ,
+                user_id = rq['user_id'],
+            )
+            db.session.add(new_stock)
+            db.session.commit()
+            new_stock_dict = new_stock.to_dict()
+            response = make_response( new_stock_dict, 201 )
+            return response
+        except:
+            response = make_response( { "error": ["validation errors"]}, 400)
+            return response
+api.add_resource( Stocks, '/stocks')
+
 
 class StocksByID( Resource ):
     def get( self, id ):
@@ -376,6 +407,13 @@ class StocksByID( Resource ):
 api.add_resource( StocksByID, '/stocks/<int:id>' )
 
 ### order detail
+
+class OrderDetails( Resource ):
+    def get( self ):
+        order_details = [ order.to_dict() for order in OrderDetail.query.all() ]
+        response = make_response( order_details, 200 )
+        return response
+api.add_resource( OrderDetails, '/order_details' )
 
 class OrderDetailsByID( Resource ):
     def get( self, id ):
