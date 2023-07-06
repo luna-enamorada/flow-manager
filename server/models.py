@@ -208,22 +208,21 @@ class Item( db.Model, SerializerMixin ):
         '-user._password_hash',
         '-user.updated_at',
 
+        '-stock.user',
         '-stock.item',
-        '-stock.user'
 
-        '-order_detail.item',
-        '-order_detail.order', 
+        '-order_detail.order',
+        '-order_detail.order.order_detail',
+        '-order_detail.order.user',
+        '-order_detail.order.item',
+        '-order_details.item',
         '-order_detail.item.user',
         '-order_detail.item.stock',
         '-order_detail.item.order',
         '-order_detail.item.order_detail',
-        '-order_detail.item.category',
+        '-order_detail.item.category',      
 
-        'order_detail.order.order_detail',
-        'order_detail.order.user',
-        'order_detail.order.item',
-
-        '-category.item',
+        '-category.item'
         '-category.item.user',
         '-category.item.stock',
         '-category.item.order',
