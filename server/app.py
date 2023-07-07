@@ -2,7 +2,7 @@ from flask import Flask, request, make_response, session, jsonify
 from flask_restful import Resource, abort
 
 from config import app, db, api
-from models import User, Budget, OrderDetail, Order, Item, Category, Stock
+from models import User, OrderDetail, Order, Item, Category
 from werkzeug.exceptions import NotFound, UnprocessableEntity, Unauthorized
 from secret import key
 
@@ -21,7 +21,7 @@ def logout():
 def authorize():
     try:
         user = User.query.filter_by(id=session.get('user_id')).first()
-        return make_response(user.to_dict( only = "name" ), 200)
+        return make_response(user.to_dict( rules = ('-_password_hash', ) ), 200)
     except: 
         raise Unauthorized("invalid credentials")
 
@@ -61,8 +61,6 @@ class Login(Resource):
             abort(401, "Unauthorized")
 
 api.add_resource(Login, '/login')            
-
-
 
 
 
@@ -262,149 +260,6 @@ class OrderByID( Resource ):
             return response
         
 api.add_resource( OrderByID, '/orders/<int:id>' )
-
-### budget
-
-class Budgets( Resource ):
-    def get(self):
-        budgets = [ b.to_dict() for b in Budget.query.all() ]
-        response = make_response( budgets, 200 )
-        return response
-
-
-    def post( self ):
-        rq = request.get_json()
-        try:
-            new_budget = Budget(
-                budget = rq['budget'] ,
-                user_id = rq['user_id'],
-            )
-            db.session.add(new_budget)
-            db.session.commit()
-            new_budget_dict = new_budget.to_dict()
-            response = make_response( new_budget_dict, 201 )
-            return response
-        except:
-            response = make_response( { "error": ["validation errors"]}, 400)
-            return response
-api.add_resource( Budgets, '/budgets')
-
-
-class BudgetByID( Resource ):
-    def get( self, id ):
-        try:
-            budget = Budget.find(id).to_dict( )
-            response = make_response( budget, 200 )
-            return response
-        except:
-            response = make_response( {"error": "budget not found"}, 404 )
-            return response
-
-
-    def patch( self, id ):
-        budget = Budget.find(id)
-        if not budget:
-            response = make_response( {"error": "budget not found"}, 404 )
-            return response
-        try:
-            for attr in request.get_json():
-                setattr( budget, attr, request.get_json()[attr] )
-            db.session.add(budget)
-            db.session.commit()
-
-
-            budget_dict = budget.to_dict(  )
-            response = make_response( budget_dict, 200 )
-            return response
-
-
-        except:
-            response = make_response( {"errors": ["validation errors"]}, 400)
-            return response
-
-
-    def delete( self, id ):
-        budget = Budget.find(id)
-        try:
-            db.session.delete( budget )
-            db.session.commit()
-            response = make_response( ' ', 204 )
-            return response
-        except:
-            response = make_response( {"error": "budget not found"}, 404 )
-            return response
-        
-api.add_resource( BudgetByID, '/budgets/<int:id>' )
-
-## stocks
-class Stocks( Resource ):
-    def get(self):
-        stocks = [ b.to_dict() for b in Stock.query.all() ]
-        response = make_response( stocks, 200 )
-        return response
-
-
-    def post( self ):
-        rq = request.get_json()
-        try:
-            new_stock = Stock(
-                stock = rq['stock'] ,
-                user_id = rq['user_id'],
-            )
-            db.session.add(new_stock)
-            db.session.commit()
-            new_stock_dict = new_stock.to_dict()
-            response = make_response( new_stock_dict, 201 )
-            return response
-        except:
-            response = make_response( { "error": ["validation errors"]}, 400)
-            return response
-api.add_resource( Stocks, '/stocks')
-
-
-class StocksByID( Resource ):
-    def get( self, id ):
-        try:
-            stock = Stock.find(id).to_dict()
-            response = make_response( stock, 200 )
-            return response
-        except:
-            response = make_response( {"error": "stock not found"}, 404 )
-            return response
-
-
-    def patch( self, id ):
-        stock = Stock.find(id)
-        if not stock:
-            response = make_response( {"error": "stock not found"}, 404 )
-            return response
-        try:
-            for attr in request.get_json():
-                setattr( stock, attr, request.get_json()[attr] )
-            db.session.add(stock)
-            db.session.commit()
-
-            stock_dict = stock.to_dict( )
-            response = make_response( stock_dict, 200 )
-            return response
-
-        except:
-            response = make_response( {"errors": ["validation errors"]}, 400)
-            return response
-
-
-    def delete( self, id ):
-        stock = Stock.find(id)
-        try:
-            db.session.delete( stock )
-            db.session.commit()
-            response = make_response( ' ', 204 )
-            return response
-        except:
-            response = make_response( {"error": "stock not found"}, 404 )
-            return response
-        
-api.add_resource( StocksByID, '/stocks/<int:id>' )
 
 ### order detail
 

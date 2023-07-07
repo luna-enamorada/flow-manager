@@ -34,15 +34,14 @@ class User( db.Model, SerializerMixin ):
     _password_hash = db.Column(db.String(15), nullable=False)
     # pfp = db.Column(db.LargeBinary )
     email = db.Column(db.String, unique=True, nullable=False)
+    budget = db.Column(db.Integer )
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     
     #### relationships
-    budget = db.relationship( 'Budget', back_populates = 'user', cascade = 'all, delete-orphan' )
     order = db.relationship( 'Order', back_populates = 'user', cascade = 'all, delete-orphan' )
     item = db.relationship( 'Item', back_populates = 'user', cascade = 'all, delete-orphan' )
-    stock = db.relationship( 'Stock', back_populates = 'user', cascade = 'all, delete-orphan' )
 
     @classmethod
     def find(cls, id):
@@ -67,43 +66,6 @@ class User( db.Model, SerializerMixin ):
         return f"<User {self.username}>"
     
 # //////////////////// Validations ////////////////////
-
-
-# ~~~~~~~~~~~~~~~~~~~ Budget Table ~~~~~~~~~~~~~~~~~~~
-
-class Budget( db.Model, SerializerMixin ):
-    __tablename__ = 'budgets'
-
-    serialize_rules = (
-        '-user.budget',
-        '-user.order',
-        '-user.item',
-        '-user.stock',
-        '-user._password_hash',
-        '-user.updated_at',
-        '-created_at',
-        '-updated_at',
-    )
-
-    id = db.Column(db.Integer, primary_key=True)
-    budget = db.Column(db.Integer)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
-
-    #### relationships
-    user = db.relationship( 'User', back_populates = 'budget')
-
-    @classmethod
-    def find(cls, id):
-        budget = Budget.query.filter(Budget.id == id).first()
-        return budget
-
-    def __repr__(self):
-        return f"<Budget: {self.budget}>"
-
 
 # ~~~~~~~~~~~~~~~~~~~ Order Table ~~~~~~~~~~~~~~~~~~~
 
@@ -237,6 +199,7 @@ class Item( db.Model, SerializerMixin ):
     price = db.Column(db.Integer, nullable=False)
     # image = db.Column(db.LargeBinary )
     par_level = db.Column(db.Integer, nullable=False)
+    stock = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
@@ -246,7 +209,6 @@ class Item( db.Model, SerializerMixin ):
 
     #### relationships
     user = db.relationship( 'User', back_populates = 'item')
-    stock = db.relationship( 'Stock', back_populates = 'item' )
     order_detail = db.relationship( 'OrderDetail', back_populates = 'item', cascade = 'all, delete-orphan' )
     order = association_proxy( 'order_detail', 'order' )
     category = db.relationship( 'Category', back_populates = 'item' )
@@ -290,41 +252,3 @@ class Category( db.Model, SerializerMixin ):
 
     def __repr__(self):
         return f"<Category {self.name}>"
-    
-# ~~~~~~~~~~~~~~~~~~~ Stock Table ~~~~~~~~~~~~~~~~~~~
-
-class Stock( db.Model, SerializerMixin ):
-    __tablename__ = 'stocks'
-
-    serialize_rules = (
-        '-item.user',
-        '-item.stock',
-        '-item.order',
-        '-item.order_detail',
-        '-item.category',
-        '-user.budget',
-        '-user.order',
-        '-user.item',
-        '-user.stock',
-        '-user._password_hash',
-        '-user.updated_at',
-        '-created_at',
-    )
-
-    id = db.Column(db.Integer, primary_key=True)
-    quantity = db.Column(db.Integer) 
-
-    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
-
-    @classmethod
-    def find(cls, id):
-        stock = Stock.query.filter(Stock.id == id).first()
-        return stock
-
-    #### relationships
-    item = db.relationship( 'Item', back_populates = 'stock' )
-    user = db.relationship( 'User', back_populates = 'stock' )
