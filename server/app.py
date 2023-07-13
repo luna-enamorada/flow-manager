@@ -17,13 +17,24 @@ def logout():
     session['user_id'] = None 
     return make_response('' , 204)
 
+# @app.before_request
+# def check_session():
+#     print(f'before request {session}')
+
+# @app.after_request
+# def check_session(response):
+#     print(f'after request {session}')
+#     return response 
+
 @app.route('/authorized-session', methods=["GET"])
 def authorize():
     try:
         user = User.query.filter_by(id=session.get('user_id')).first()
-        return make_response(user.to_dict( rules = ('-_password_hash', ) ), 200)
-    except: 
-        raise Unauthorized("invalid credentials")
+        return make_response( user.to_dict(rules = ('-_password_hash', ) ) , 200)
+    except Exception as e: 
+        import ipdb; ipdb.set_trace()
+        return make_response( e )
+        # raise Unauthorized("invalid credentials")
 
 @app.route('/dark-mode', methods=["GET"])
 def mode():
@@ -72,6 +83,49 @@ class Users( Resource ):
 
 api.add_resource( Users, '/users')
 
+class UsersByID( Resource ):
+    def get( self, id ):
+        try:
+            user = User.find(id).to_dict( )
+            response = make_response( user, 200 )
+            return response
+        except:
+            response = make_response( {"error": "user not found"}, 404 )
+            return response
+
+    def patch( self, id ):
+        user = User.find(id)
+        if not user:
+            response = make_response( {"error": "user not found"}, 404 )
+            return response
+        try:
+            for attr in request.get_json():
+                setattr( user, attr, request.get_json()[attr] )
+            db.session.add(user)
+            db.session.commit()
+
+
+            user_dict = user.to_dict(  )
+            response = make_response( user_dict, 200 )
+            return response
+
+
+        except:
+            response = make_response( {"errors": ["validation errors"]}, 400)
+            return response
+
+    def delete( self, id ):
+        user = User.find(id)
+        try:
+            db.session.delete( user )
+            db.session.commit()
+            response = make_response( ' ', 204 )
+            return response
+        except:
+            response = make_response( {"error": "user not found"}, 404 )
+            return response
+        
+api.add_resource( UsersByID, '/users/<int:id>' )
 
 
 class Items( Resource ):
@@ -89,7 +143,8 @@ class Items( Resource ):
                 price = rq['price'] ,
                 par_level = rq['par_level'] ,
                 user_id = rq['user_id'],
-                category_id = rq['category_id']
+                category_id = rq['category_id'],
+                stock = rq['stock']
             )
             db.session.add(new_item)
             db.session.commit()
@@ -148,6 +203,12 @@ class ItemsByID( Resource ):
         
 api.add_resource( ItemsByID, '/items/<int:id>' )
 
+class ItemsByUserId (Resource):
+    def get(self, id):
+        items = [ item.to_dict() for item in Item.query.filter_by(user_id=id) ]
+        response = make_response( items, 200 )
+        return response
+api.add_resource( ItemsByUserId, '/ItemsByUserId/<int:id>')
 
 #### category routes
 
@@ -161,7 +222,7 @@ class Categories( Resource ):
     def post( self ):
         rq = request.get_json()
         try:
-            new_category = Item(
+            new_category = Category(
                 name = rq['name'] ,
             )
             db.session.add(new_category)
@@ -206,12 +267,37 @@ class CategoriesByID( Resource ):
 
 api.add_resource( CategoriesByID, '/categories/<int:id>' )
 
+class ItemsByCategoryId (Resource):
+    def get(self, id):
+        items = [ item.to_dict() for item in Item.query.filter_by(category_id=id) ]
+        response = make_response( items, 200 )
+        return response
+api.add_resource( ItemsByCategoryId, '/itemsByCategoryId/<int:id>')
+
+
 ### orders
 class Orders( Resource ):
     def get(self):
         orders = [ order.to_dict() for order in Order.query.all() ]
         response = make_response( orders, 200 )
         return response
+    
+    def post( self, id ):
+        rq = request.get_json()
+        try:
+            new_order = Order(
+                total = rq['total'] ,
+                user_id = rq['user_id']
+            )
+            db.session.add(new_order)
+            db.session.commit()
+            new_order_dict = new_order.to_dict()
+            response = make_response( new_order_dict, 201 )
+            return response
+        except:
+            response = make_response( { "error": ["validation errors"]}, 400)
+            return response
+
 api.add_resource( Orders, '/orders')
 
 
@@ -261,6 +347,37 @@ class OrderByID( Resource ):
         
 api.add_resource( OrderByID, '/orders/<int:id>' )
 
+class OrderByUserId (Resource):
+    def get(self, id):
+        order = [ order.to_dict() for order in Order.query.filter_by(user_id=id) ]
+        response = make_response( order, 200 )
+        return response
+    
+
+    def patch( self, id ):
+        order = Order.query.filter_by(user_id=id).first()
+        if not order:
+            response = make_response({"error": "order not found"}, 404)
+            return response
+
+        try:
+            data = request.get_json()
+            for attr in data:
+                if attr in order.__dict__:
+                    setattr(order, attr, data[attr])
+            
+            db.session.commit()
+            
+            order_dict = order.to_dict()
+            response = make_response(order_dict, 200)
+            return response
+        except Exception as e:
+            response = make_response({"errors": [str(e)]}, 400)
+            return response
+
+api.add_resource( OrderByUserId, '/orderByUserId/<int:id>')
+
+
 ### order detail
 
 class OrderDetails( Resource ):
@@ -268,6 +385,24 @@ class OrderDetails( Resource ):
         order_details = [ order.to_dict() for order in OrderDetail.query.all() ]
         response = make_response( order_details, 200 )
         return response
+    
+    def post( self ):
+        rq = request.get_json()
+        try:
+            new_order = OrderDetail(
+                quantity = rq['quantity'] ,
+                order_id = rq['order_id'] ,
+                item_id = rq['item_id']
+            )
+            db.session.add(new_order)
+            db.session.commit()
+            new_order_dict = new_order.to_dict()
+            response = make_response( new_order_dict, 201 )
+            return response
+        except:
+            response = make_response( {"errors": ["validation errors"]}, 400)
+            return response
+
 api.add_resource( OrderDetails, '/order_details' )
 
 class OrderDetailsByID( Resource ):
@@ -314,6 +449,53 @@ class OrderDetailsByID( Resource ):
         
 api.add_resource( OrderDetailsByID, '/order_details/<int:id>' )
 
+class OrderDetailsByOrderID (Resource):
+    def get(self, id):
+        order = [ order.to_dict() for order in OrderDetail.query.filter_by(order_id=id) ]
+        response = make_response( order, 200 )
+        return response
+api.add_resource( OrderDetailsByOrderID, '/orderDetailsByOrderID/<int:id>')
+
+class OrderDetailsByItemID (Resource):
+    def get(self, id):
+        order = [ order.to_dict() for order in OrderDetail.query.filter_by(item_id=id) ]
+        response = make_response( order, 200 )
+        return response
+    
+    def patch( self, id ):
+        order_detail = OrderDetail.query.filter_by(item_id=id).first() 
+        if not order_detail:
+            response = make_response( {"error": "order detail not found"}, 404 )
+            return response
+        try:
+            for attr in request.get_json():
+                setattr( order_detail, attr, request.get_json()[attr] )
+            db.session.add(order_detail)
+            db.session.commit()
+
+            order_detail_dict = order_detail.to_dict( )
+            response = make_response( order_detail_dict, 200 )
+            return response
+        except:
+            response = make_response( {"errors": ["validation errors"]}, 400)
+            return response
+        
+    def delete(self, id):
+        order_detail = OrderDetail.query.filter_by(item_id=id).first() 
+        try:
+            if order_detail:
+                db.session.delete(order_detail)
+                db.session.commit()
+                response = make_response('', 204)
+                return response
+            else:
+                response = make_response({"error": "order detail not found"}, 404)
+                return response
+        except:
+            response = make_response({"error": "An error occurred while deleting the order detail"}, 500)
+            return response
+
+api.add_resource( OrderDetailsByItemID, '/orderDetailsByItemID/<int:id>')
 
 if __name__ == '__main__':
     app.run( port = 5000, debug=True )

@@ -128,7 +128,6 @@ class OrderDetail( db.Model, SerializerMixin ):
         '-order.user._password_hash',
         '-order.user.updated_at',
         '-item.user',
-        '-item.stock',
         '-item.order',
         '-item.order_detail',
         '-item.category',

@@ -15,21 +15,11 @@ if __name__ == '__main__':
     with app.app_context():
         print("Starting seed...")
         # Seed code goes here!
-        User.query.delete()
+        # User.query.delete()
         OrderDetail.query.delete()
         Order.query.delete()
         Item.query.delete()
         Category.query.delete()
-
-        user = User(
-            name = 'melissa',
-            username = 'starbiesmanager',
-            _password_hash = 'password',
-            email = 'melissaelizn@gmail.com',
-            budget = 6000,
-        )
-        db.session.add(user)
-        db.session.commit()
 
         od = Order(
             total = 9000,

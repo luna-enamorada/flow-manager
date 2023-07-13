@@ -1,0 +1,7 @@
+.item{
+    border: 0.1rem outset rgb(111, 87, 91);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    margin-left: 100px;
+}
