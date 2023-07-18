@@ -5,15 +5,20 @@ import { UserContext } from '../App';
 import { Link } from 'react-router-dom';
 
 import CategoryCard from "../component/CategoryCard";
+import SideBar from "../component/SideBar";
+
+import "../stylesheets/Categories.css"
 
 function Categories(){
   const navigate = useNavigate();
   
   const { user, setUser } = useContext(UserContext)
   const [categories, setCategories] = useState([])
+  const [searchValue, setSearchValue] = useState(" ");
 
   useEffect(() => {
     getCategories()
+    handleSearch()
   }, []);
 
   function getCategories () {
@@ -25,22 +30,72 @@ function Categories(){
     })
   }
 
+  function handleSearch(e) {
+    const searchValue = e ? e.target.value : "";
+    setSearchValue(searchValue);
+  }
 
-  const categoriesDisplay = Array.isArray(categories)
-  ? categories.map((categories) => (
-    <div className='category-card-container'>
-      <Link
-        to={{ pathname: `/categories/${categories.id}`}}
-        key={categories.id}
-      > {categories.name} </Link>
-    </div>
+  const filteredItems = [...categories].filter((item) => 
+    item.name.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+
+
+  const categoriesDisplay = filteredItems.map((category) => (
+      <div className="content">
+        <div className="category-card">
+          <div className="card_title">
+            <p className="padding"> 000</p>
+            <p className="padding"> 000</p>
+            <Link
+              to={{ pathname: `/categories/${category.id}` }}
+              key={category.id}
+              style={{ color: '#007bff', textDecoration: 'none' }}
+            >
+              <p className="cat-name" >{category.name}</p>
+            </Link>
+            {category.item?.length !== undefined && (
+              <p className="item-count">Items: {category.item.length}</p>
+            )}
+          </div>
+          <div className="card_image">
+            <img src="https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg" alt="Category" />
+            <img src="https://i.stack.imgur.com/1hCKa.png" alt="transparent" />
+          </div>
+        </div>
+      </div>
     ))
-  : null;
 
-
-  return(
+  return (
     <div>
-      {categoriesDisplay}
+      <SideBar />
+      <div className="d-flex offset-md-2">
+        <div className="flex-grow-1">
+          <h1 className="title" > CATEGORIES </h1>
+          <div className='search-container'>
+          <div className="search-bar">
+          <input
+          type="text"
+          className="search"
+          value={searchValue}
+          placeholder="Find what you're looking for."
+          onChange={(e) => handleSearch(e)}
+          />
+          </div>
+          <Link to="/category-form">
+            <button className="button-48" role="button">
+              <span className="text">Create New Category</span>
+            </button>
+          </Link>
+          </div>
+          <hr className="text-white" />
+          <div className="container">
+            <div className="cards-list">
+              {categoriesDisplay}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

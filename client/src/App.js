@@ -12,43 +12,73 @@ import CategoryForm from './pages/CategoryForm';
 import OrderPage from './pages/OrderPage';
 import UserPage from './pages/UserPage';
 
+import "./stylesheets/App.css"
+
 export const UserContext = React.createContext();
-export const CartContext = React.createContext();
+// export const CartContext = React.createContext();
 
 function App() {
   const [ user, setUser ] = useState({})
-  const [ cartOrder, setCartOrder ] = useState(null)
+  const [loading, setLoading] = useState(true);
 
+  // const [ cartOrder, setCartOrder ] = useState({})
+
+  // useEffect(() => {
+  //   fetch('http://127.0.0.1:5000/authorized-session')
+  //     .then(r => r.json())
+  //     .then(data => {
+  //       console.log(data)
+  //       setUser(data);
+  //       localStorage.setItem('user', JSON.stringify(data)); 
+  //     })
+  //     .catch(error => console.log(error))
+  //   const storedUser = localStorage.getItem('user');
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
   useEffect(() => {
     fetch('http://127.0.0.1:5000/authorized-session')
       .then(r => r.json())
       .then(data => {
-        console.log(data)
+        // console.log(data)
         setUser(data);
-        localStorage.setItem('user', JSON.stringify(data)); 
+        localStorage.setItem('user', JSON.stringify(data));
+        setLoading(false);
       })
-      .catch(error => console.log(error))
-    // const storedUser = localStorage.getItem('user');
-    // if (storedUser) {
-    //   setUser(JSON.parse(storedUser));
-    // }
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+      });
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      fetch(`http://127.0.0.1:5000/orderByUserId/${user.id}`)
-        .then(r => r.json())
-        .then(data => {
-          setCartOrder(data);
-          console.log(data)
-        });
-    }
-  }, [user]);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+
+  // useEffect(() => {
+  //   if (user) {
+  //     fetch(`http://127.0.0.1:5000/orderByUserId/${user.id}`)
+  //       .then(r => r.json())
+  //       .then(data => {
+  //         setCartOrder(data);
+  //         console.log(data)
+  //       });
+  //   }
+  // }, [user]);
     
   return (
       <UserContext.Provider value={{ user, setUser }}>
     <div className="App" >
-        <CartContext.Provider value={{ cartOrder, setCartOrder }}>
+    {loading ? ( // Show loading message while fetching user data
+          <div>Loading...</div>
+        ) : (
           <BrowserRouter>
             <Routes>
               <Route path = "/" element = { <Login />} />
@@ -62,8 +92,8 @@ function App() {
               <Route path = "/user-page" element = { <UserPage /> }/>
             </Routes>
           </BrowserRouter>
-        </CartContext.Provider>
-    </div>
+        )}
+        </div>
       </UserContext.Provider>
   );
 }

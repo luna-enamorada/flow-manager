@@ -1,24 +1,26 @@
 import { useNavigate, useLocation, useParams  } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { useFormik } from 'formik';
-import { UserContext, CartContext } from '../App';
+import { UserContext } from '../App';
 import * as yup from 'yup';
 import { addToOrder, updatedTotal } from "../component/context/CartContext";
+
+import SideBar from './SideBar';
 
 import "../stylesheets/ItemCard.css"
 
 function ItemCard() {
   const { id } = useParams();
   const { user, setUser } = useContext(UserContext)
-  const { cartOrder } = useContext(CartContext)
 
   const [ item, setItem ] = useState([])
   const { name, price, par_level, stock } = item
 
+  const cartOrder =  user.order[0]
 
   useEffect(() => {
     fetchItem(id)
-    }, [id])
+    })
   
   function fetchItem(id) {
       fetch(`http://127.0.0.1:5000/items/${id}`)
@@ -28,11 +30,10 @@ function ItemCard() {
         // console.log(data)
       })
   }
-  function updateTotalValue(newTotal) {
-    if (user) {
-      updatedTotal(newTotal, user.id)
+
+  function updateTotalValue(newTotal ) {
+      updatedTotal( newTotal, user.id)
     }
-  }
   
 
   const navigate = useNavigate(); 
@@ -41,6 +42,7 @@ function ItemCard() {
     navigate(`/inventory`)
   }
   const [itemAdded, setItemAdded] = useState(false)
+
 
   function handleAdd() {
     // if (cartOrder && cartOrder.order_detail) {
@@ -54,10 +56,11 @@ function ItemCard() {
     //     return;
     //   }
     // } else {
-      addToOrder(1, item.id, cartOrder[0].id)
+      addToOrder(1, item.id, cartOrder.id)
         .then(() => {
           setItemAdded(true);
-          updateTotalValue( price, user.id )
+          updateTotalValue(cartOrder.total + price)
+          // console.log(cartOrder.total)
         })
         .catch(error => console.log(error));
     //}
@@ -86,9 +89,7 @@ function ItemCard() {
   };
   
 
-  const updateItemStock = () => {
-    const updatedStock = stock - 1;
-  
+  const updateItemStock = (updatedStock) => {
     fetch(`http://127.0.0.1:5000/items/${id}`, {
       method: "PATCH",
       headers: {
@@ -107,12 +108,22 @@ function ItemCard() {
         console.error("Error:", error);
       });
   };
+
+  function addStock() {
+    const updatedStock = stock + 1;
+    updateItemStock(updatedStock)
+  }
+
+  function removeStock() {
+    const updatedStock = stock - 1;
+    updateItemStock(updatedStock)
+  }
   
   const updateItem = () => {
     const updatedFields = {
       name: updateItemInfo.name,
       price: updateItemInfo.price, 
-      unit: updateItemInfo.unit, 
+      par_level: updateItemInfo.par_level, 
       };
 
     fetch(`http://127.0.0.1:5000/items/${id}`, {
@@ -143,7 +154,7 @@ function ItemCard() {
     .then((response) => {
         // console.log(response)
         if (!response.ok) {
-          throw new Error("Failed to delete item.");
+          return console.log("Failed to delete item.")
         }
         confirmDeletion() 
     })
@@ -161,67 +172,133 @@ const closeDeletePopup = () => {
 };
 
 return (
-  <div className='item-details'>
-    <div className="row-left">
-      <img className='image' 
-      src = "https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg"
-      alt = "super-cool"
-      />
-    </div>
-    <div className="row-right">
+  <div>
+  <SideBar />
+  <div className="d-flex offset-md-2">
+    <div className="flex-grow-1">      
+    <h1 className="title" > VIEWING: {name} </h1>
 
-    <div className="input">
-      {editItemInfo ? (
-        <input
-        type="text"
-        name="name"
-        value={updateItemInfo.name}
-        onChange={handleItemFieldChange}
-        />
-        ) : ( <h2>{name}</h2> )}
-    </div>
-    <button
-      className='close-item-details'
-      onClick={handleClick} > close </button>
-    
-    <div className="edit-button">
-      {editItemInfo ? (
-        <button
-          className="default-button"
-          onClick={updateItem}
-          > Save Changes </button>
-          ) : (
-        <button
-        className="default-button"
-          onClick={toggleEditngItem}
-          > Edit </button>
-          )}
-    </div>
-        <p>Stock: {stock}</p>
-        <button onClick={updateItemStock}>Remove 1</button>
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-10 mx-auto mt-3">
+              <button
+                className='close-item-details'
+                onClick={handleClick} > X </button>
+          <div className="card">
+            <div className="card-horizontal">
+              <img
+                className="card-image"
+                src="https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg"
+                alt="Card image cap"
+              />
 
-    {/* Delete button functionality ~~~ */}
-    <button className='delete-button' onClick={toDelete}>
-      Delete
-    </button>
-    {showDelete && (
-      <div className='delete-popup'>
-        <h2 className='delete-confirmation'>Are you sure you want to delete "{name}"?</h2>
-        <h3> ( It's permanent. ) </h3>
-        <button className='confirm-delete' onClick={handleDelete}>
-          Yes, I'm sure.
-        </button>
-        <button className='cancel-delete' onClick={closeDeletePopup}>
-          Nevermind.
-        </button>
+              <div className="card-body" >
+                <div className="item-input">
+                  {editItemInfo ? (
+                    <div>
+                      <p > Item Name: </p>
+                    <input
+                    className='item-input'
+                    type="text"
+                    name="name"
+                    value={updateItemInfo.name}
+                    onChange={handleItemFieldChange}
+                    />
+                      <p > New Price: </p>
+                    <input
+                    className='item-input'
+                    type="number"
+                    name="price"
+                    value={updateItemInfo.price}
+                    onChange={handleItemFieldChange}
+                    />
+                      <p > New Par Level: </p>
+                    <input
+                    className='item-input'
+                    type="number"
+                    name="par_level"
+                    value={updateItemInfo.par_level}
+                    onChange={handleItemFieldChange}
+                    />
+                    </div>
+
+                    ) : ( 
+                      <div> 
+
+                      <h3 className="display-6 py-2" style={{color: stock < par_level ? '#f92828' : 'inherit', }} >
+                      {name}</h3>
+                      <h3 className="card-price"> Price per unit: ${price} </h3>
+                      <h3 className='card-price'>Par Level:  <span style={{ color: '#d58686' }}> {par_level}</span></h3>
+
+                      </div>
+                        )}
+                </div>
+                <div className="edit-button">
+                {editItemInfo ? (
+                  <button
+                    className="btn mt-3"
+                    onClick={updateItem}
+                    style={{ backgroundColor: '#d58686', color: '#FCEFEF' }}
+                    > Save Changes </button>
+                    ) : (
+                  <button
+                  className="btn mt-3"
+                    onClick={toggleEditngItem}
+                    style={{ backgroundColor: '#d58686', color: '#FCEFEF' }}
+                    > Edit </button>
+                    )}
+              </div>
+              </div>
+              <div className="col-4 py-5" >
+                <h3 className='card-price'>Current Stock: <span style={{color: stock < par_level ? '#f92828' : 'inherit', }}> {stock}</span></h3>
+                <button className='btn btn-outline-success' onClick={addStock} > Add 1</button>
+                <button className='btn btn-outline-danger' onClick={removeStock} > Remove 1</button>
+
+              </div>
+            </div>
+              <button className="btn" onClick={handleAdd} disabled={itemAdded}>
+                {itemAdded ? "Added to Order" : "Add to Order"}
+              </button>
+          </div>
+                  <button className='delete-button' onClick={toDelete}>
+                    Delete
+                  </button>
+                  {showDelete && (
+                    <div className='delete-popup'>
+                      <h2 className='card-price'>Are you sure you want to delete "{name}"?</h2>
+                      <h3 className='card-price' style={{ color: '#d58686' }} > ( It's permanent. ) </h3>
+                      <button className='btn btn-outline-danger' onClick={handleDelete}>
+                        Yes, I'm sure.
+                      </button>
+                      <button className='btn btn-outline-secondary' onClick={closeDeletePopup}>
+                        Nevermind.
+                      </button>
+                    </div>
+                  )}
+        </div>
       </div>
-    )}
-      <button className="btn" onClick={handleAdd} disabled={itemAdded}>
-        {itemAdded ? "Added to Order" : "Add to Order"}
-      </button>
     </div>
+
+  </div>
+  </div>
   </div>
 );
 }
 
 export default ItemCard;
+
+// <div className='item-details'>
+// <div className="row-left">
+//   <img className='image' 
+//   src = "https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg"
+//   alt = "super-cool"
+//   />
+// </div>
+// <div className="row-right">
+
+
+//     <p>Stock: {stock}</p>
+    
+
+// </div>
+// </div>

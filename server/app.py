@@ -31,10 +31,8 @@ def authorize():
     try:
         user = User.query.filter_by(id=session.get('user_id')).first()
         return make_response( user.to_dict(rules = ('-_password_hash', ) ) , 200)
-    except Exception as e: 
-        import ipdb; ipdb.set_trace()
-        return make_response( e )
-        # raise Unauthorized("invalid credentials")
+    except:
+        raise Unauthorized("invalid credentials")
 
 @app.route('/dark-mode', methods=["GET"])
 def mode():
@@ -106,7 +104,7 @@ class UsersByID( Resource ):
 
 
             user_dict = user.to_dict(  )
-            response = make_response( user_dict, 200 )
+            response = make_response( jsonify(user_dict), 200 )
             return response
 
 
@@ -264,6 +262,18 @@ class CategoriesByID( Resource ):
         except:
             response = make_response( {"errors": ["validation errors"]}, 400)
             return response
+        
+    def delete( self, id ):
+        order = Category.find(id)
+        try:
+            db.session.delete( order )
+            db.session.commit()
+            response = make_response( ' ', 204 )
+            return response
+        except:
+            response = make_response( {"error": "Category not found"}, 404 )
+            return response
+
 
 api.add_resource( CategoriesByID, '/categories/<int:id>' )
 
@@ -282,7 +292,7 @@ class Orders( Resource ):
         response = make_response( orders, 200 )
         return response
     
-    def post( self, id ):
+    def post( self ):
         rq = request.get_json()
         try:
             new_order = Order(
@@ -369,7 +379,7 @@ class OrderByUserId (Resource):
             db.session.commit()
             
             order_dict = order.to_dict()
-            response = make_response(order_dict, 200)
+            response = make_response( order_dict, 200)
             return response
         except Exception as e:
             response = make_response({"errors": [str(e)]}, 400)

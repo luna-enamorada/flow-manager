@@ -1,80 +1,48 @@
-.item-card {
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    margin-left: 19rem;
-    max-width: 80%;
+
+.item{
+    border: 0.1rem outset rgb(111, 87, 91);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    margin-left: 100px;
 }
 
-.item-details {
-    max-height: 100%;
-    max-width: auto;
-    height: 255px;
-    width: 1000px;
-    margin: 1rem;
-    padding: 3rem;
-    background-color: aliceblue;
-    border-radius: 25px;
+.card-horizontal {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 4rem;
-    margin-right: 11rem;
-    margin-left: 5rem;
+    flex: 1 1 auto;
 }
 
-.row-right{
-    align-items: center;
-    justify-content: center;
-    width: 80%;
-    padding: 8rem;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    white-space: pre-wrap;
-}
-
-/* .close-item-details{
-    margin-top: 1rem;
-    position: absolute;
-    border-radius: 20px;
-    background-color: #2093c3;
-    align-items: center;
-    justify-content: center;
-}
-
-.close-item-details:hover {
-    background-color: rgb(42, 128, 209);
-} */
-
-.image{
-    width: 350px;
-    height: 350px;
+.card-image{
+    width: 200px;
+    height: 200px;
     object-fit: cover;
-    border-radius: 25px 0px 0px 25px;
-    margin-left: -50px;
+    /* border-radius: 10px; */
 }
 
-.show-details-button {
-    background-color: #ddc7c7;
+.card-price {
+    font-weight: 100;
+    padding-top: 5px;
 }
 
-.show-details-button:hover {
-    background-color: rgb(140, 63, 76);
+.item-input {
+    color: rgb(147, 63, 63);
+    /* padding: 5px; */
+    margin:5px 0;
+    border:1;
+    border-color: rgb(111, 87, 91);
+    font-weight: 400;
+    border-radius:10px;
+    width:80%;
+    text-align: center;
 }
 
-@media (max-width:700px){
-    .item-details {
-        flex-direction: column;
-    }
-    .close-details-button {
-        top: 0;
-        right: 10rem;
-    }
+.close-item-details {
+    background-color: #ffffff00;
+    border:0;
+
 }
 
 button.delete-button {
-    
     background-color: rgb(117, 20, 20);
     border: 0;
     border-radius: 4px;
@@ -84,7 +52,7 @@ button.delete-button {
     cursor: pointer;
     font-family: Montserrat,sans-serif;
     font-size: .9em;
-    padding: 10px 15px;
+    /* padding: 10px 15px; */
     text-align: auto;
     user-select: none;
     -webkit-user-select: none;
@@ -92,8 +60,6 @@ button.delete-button {
 } 
 
 button.delete-button {
-    margin-left: 90px;
     width: 60px;
     height: 35.8px;
 } 
-

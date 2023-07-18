@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import Item from '../component/Item';
 import SideBar from '../component/SideBar';
 
-import "../stylesheets/ItemCard.css"
+// import "../stylesheets/ItemCard.css"
 import "../stylesheets/ItemCollection.css"
 
 
@@ -37,6 +37,8 @@ function ItemCollection() {
     item.name.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+  const itemCount = items.length 
+
 const itemDisplay = filteredItems.map((item) => (
   <div className='cards'>
     <Item
@@ -45,34 +47,35 @@ const itemDisplay = filteredItems.map((item) => (
   </div>
 ));
 
-    return (
-      <div className='item-collection'>
-        {/* <SideBar />  */}
-          <Link 
-          to={{ pathname: `/categories`}}
-          > Categories </Link>
-          <Link 
-          to={{ pathname: `/order`}}
-          > Order Page </Link>
-          <Link 
-          to={{ pathname: `/user-page`}}
-          > User Page </Link>
+return (
+  <div className="item-collection">
+    <SideBar />
+    <div className="d-flex offset-md-2">
+    <div className="flex-grow-1">
+      <h1 className="title" > INVENTORY </h1>
+      <div className='search-container'>
 
-          <h1> All items </h1>
-          <Link 
-          to={{ pathname: `/item-form`}}
-          > Create New Item </Link>
-          <Link 
-          to={{ pathname: `/category-form`}}
-          > Create New Category </Link>
-          <input
+        <div className="search-bar">
+        <input
           type="text"
           className="search"
           value={searchValue}
           placeholder="Find what you're looking for."
           onChange={(e) => handleSearch(e)}
           />
-          {itemDisplay}
+        </div>
+
+        <Link to="/item-form">
+            <button className="button-48" role="button">
+              <span className="text">Create New Item</span>
+            </button>
+          </Link>
+          </div>
+      <p className="lead text-muted offset-md-1 font-weight-light" > Total Items: {itemCount} </p>
+        {itemDisplay}
       </div>
-    )}
+    </div>
+  </div>
+);
+}
 export default ItemCollection

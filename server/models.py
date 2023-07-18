@@ -80,12 +80,10 @@ class Order( db.Model, SerializerMixin ):
         '-order_detail.item.order',
         '-order_detail.item.order_detail',
         '-order_detail.item.category',
-        '-user.budget',
         '-user.order',
         '-user.item',
         '-user.stock',
         '-user._password_hash',
-        '-user.updated_at',
         '-created_at',
         '-updated_at',
     )
@@ -121,7 +119,6 @@ class OrderDetail( db.Model, SerializerMixin ):
         '-order.order_detail',
         '-order.user',
         '-order.item'
-        '-order.user.budget',
         '-order.user.order',
         '-order.user.item',
         '-order.user.stock',

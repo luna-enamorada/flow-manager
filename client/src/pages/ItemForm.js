@@ -4,6 +4,7 @@ import { UserContext } from '../App';
 import * as yup from 'yup';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
+import SideBar from '../component/SideBar';
 
 function ItemForm(){
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ function ItemForm(){
   const formSchema = yup.object({
     name: yup.string().required('Name is required.'),
     price: yup.number().required('Price is required.'),
-    units: yup.number().required('Unit number is required.').positive().integer(),
     par_level: yup.number().required('Par level is required.'),
   });
 
@@ -35,7 +35,6 @@ function ItemForm(){
     initialValues: {
       name: '',
       price: 0,
-      units: 0,
       par_level: 0,
       stock: 0,
       user_id: user.id,
@@ -75,27 +74,108 @@ function ItemForm(){
 
   return (
     <div className="body">
-      <section>
-        <form className="form" onSubmit={formik.handleSubmit}>
-          <h1>Create a New Item</h1>
-          <label>name</label>
-          <input value={formik.values.name} onChange={formik.handleChange} type="text" name="name" />
-          <label>price $</label>
-          <input value={formik.values.price} onChange={formik.handleChange} type="number" name="price" />
-          <label>units</label>
-          <input value={formik.values.units} onChange={formik.handleChange} type="number" name="units" />
-          <label>par level</label>
-          <input value={formik.values.par_level} onChange={formik.handleChange} type="number" name="par_level" />
-          <label>current stock</label>
-          <input value={formik.values.stock} onChange={formik.handleChange} type="number" name="stock" />
-          <select value={formik.values.category_id} onChange={handleSelect} name="category_id">
-            {categoriesDisplay}
-          </select>
-          <input type="submit" value="create" className="button" />
-          <Link to={{ pathname: '/inventory' }}> Cancel </Link>
-        </form>
-      </section>
+      <SideBar />
+      <div className="d-flex offset-md-2">
+        <div className="flex-grow-1">
+
+        <div className="card p-3">
+            <div className="row">
+              <div className="col-md-6 offset-md-3">
+        <form className="form-horizontal" onSubmit={formik.handleSubmit}>
+<fieldset>
+
+<div class="col-md-6 text-center d-flex justify-content-center align-items-center">
+        <h2 class="text-muted">Create New Item</h2>
+      </div>
+
+<div class="form-group">
+  <label class="col-md-6 control-label" for="textinput">Name</label>  
+  <div class="col-md-6">
+  <input id="textinput" name="name" type="text" placeholder="name of new item" class="form-control input-md" 
+  value={formik.values.name} onChange={formik.handleChange} />
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-md-6 control-label" for="textinput">Price</label>  
+  <div class="col-md-6">
+  <input id="textinput" name="price" type="number" placeholder="price of new item" class="form-control input-md" 
+  value={formik.values.price} onChange={formik.handleChange} />
+    
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-md-6 control-label" for="textinput">Par Level</label>  
+  <div class="col-md-6">
+  <input id="textinput" name="stock" type="number" placeholder="par level" class="form-control input-md" 
+  value={formik.values.stock} onChange={formik.handleChange} />
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-md-6 control-label" for="textinput">Current Stock</label>  
+  <div class="col-md-6">
+  <input id="textinput" name="stock" type="number" placeholder="current stock" class="form-control input-md"
+  value={formik.values.stock} onChange={formik.handleChange}/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-md-6 control-label" for="selectbasic">Category</label>
+  <div class="col-md-6">
+    <select value={formik.values.category_id} onChange={handleSelect} name="category_id" class="form-control">
+    {categoriesDisplay}
+  </select>
+  </div>
+</div>
+
+{/* <!-- File Button -->  */}
+{/* <div class="form-group">
+  <label class="col-md-6 control-label" for="filebutton">Image</label>
+  <div class="col-md-6">
+    <input id="filebutton" name="filebutton" class="input-file" type="file" />
+  </div>
+</div> */}
+
+<div className="form-group">
+                      <label className="col-md-4 control-label" htmlFor="button1id"></label>
+                      <div className="col-md-8">
+                        <input type="submit" value="Create" className="btn btn-sm" 
+                        style={{ backgroundColor: '#d58686', color: '#FCEFEF' }}
+                        />
+                        <Link to="/inventory">
+                          <button className="btn btn-sm btn-outline-danger" role="button">
+                            <span className="text">Cancel</span>
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }
 export default ItemForm
+
+// <section>
+// <form className="form" onSubmit={formik.handleSubmit}>
+//   <h1>Create a New Item</h1>
+//   <label>name</label>
+//   <input value={formik.values.name} onChange={formik.handleChange} type="text" name="name" />
+//   <label>price $</label>
+//   <input value={formik.values.price} onChange={formik.handleChange} type="number" name="price" />
+//   <label>par level</label>
+//   <input value={formik.values.par_level} onChange={formik.handleChange} type="number" name="par_level" />
+//   <label>current stock</label>
+//   <input value={formik.values.stock} onChange={formik.handleChange} type="number" name="stock" />
+//   <select value={formik.values.category_id} onChange={handleSelect} name="category_id">
+//     {categoriesDisplay}
+//   </select>
+//   <input type="submit" value="create" className="button" />
+//   <Link to={{ pathname: '/inventory' }}> Cancel </Link>
+// </form>
+// </section>

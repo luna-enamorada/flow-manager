@@ -5,3 +5,19 @@
     text-align: center;
     margin-left: 100px;
 }
+
+.card-horizontal {
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.card-image{
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-price {
+    font-weight: 100;
+    padding-top: 5px;
+}

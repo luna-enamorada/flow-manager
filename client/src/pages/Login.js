@@ -4,6 +4,9 @@ import { useFormik } from 'formik';
 import { UserContext } from '../App';
 import * as yup from 'yup';
 
+import "../stylesheets/Login.css"
+
+
 function Login() {
   const { user, setUser } = useContext(UserContext)
 
@@ -11,6 +14,38 @@ function Login() {
   const toggleSignup = () => setSignup((prev) => !prev);
 
   const navigate = useNavigate();
+
+  const handleSuccess = (user) => {
+    setUser(user);
+    localStorage.setItem('user', JSON.stringify(user))
+    console.log('login sucess', user )
+    if (signup) {
+      newOrder(user);
+    }
+  }
+
+  function newOrder(user, total) {
+    if (!user.id) {
+      console.error('Cannot create order: User ID is missing.');
+    }
+  const newOrder = {
+    user_id: user.id,
+    total: 0,
+  };
+
+  return fetch('http://127.0.0.1:5000/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newOrder),
+  })
+    .then(response => response.json())
+    .catch(error => {
+      console.error(error);
+    });
+}
+
 
   const formSchema = yup.object({
     name: yup.string(),
@@ -39,48 +74,52 @@ function Login() {
         .then((res) => res.json())
         .then((data) => {
           actions.resetForm();
-          setUser(data);
-          navigate('/inventory');
+          handleSuccess(data)
+          navigate('/user-page');
         })
         .catch(error => alert(error))
     },
   });
 
+  
+
   return (
-    <div className="body">
+    <div>
+    <div className="form-body">
+      <h1 className='title text-white py-1 fw-normal'> Manage Flow </h1>
+      <h2 className='title text-white py-1'> Keep track of inventory with ease. </h2>
       <section>
         {signup ? (
           <form className='form' onSubmit={formik.handleSubmit}>
-            <h1>signup</h1>
-            <label>name</label>
-            <input value={formik.values.first_name} onChange={formik.handleChange} type='text' name='name' />
-            <label>email</label>
-            <input value={formik.values.email} onChange={formik.handleChange} type='text' name='email' />
-            <label>username</label>
-            <input value={formik.values.username} onChange={formik.handleChange} type='text' name='username' />
-            <label>password</label>
-            <input value={formik.values.password} onChange={formik.handleChange} type='password' name='password' />
-            {/* <label>avatar</label>
-            <input value={formik.values.avatar} onChange={formik.handleChange} type='text' name='avatar' /> */}
+            <h1 className='title text-white'>signup</h1>
+            <h4 className='title text-white py-1' >name</h4>
+            <input value={formik.values.first_name} onChange={formik.handleChange} type='text' name='name' className='input' />
+            <h4 className='title text-white py-1' >email</h4 >
+            <input value={formik.values.email} onChange={formik.handleChange} type='text' name='email' className='input' />
+            <h4 className='title text-white py-1'>username</h4 >
+            <input value={formik.values.username} onChange={formik.handleChange} type='text' name='username' className='input' />
+            <h4 className='title text-white py-1' >password</h4 >
+            <input value={formik.values.password} onChange={formik.handleChange} type='password' name='password' className='input' />
             <input type='submit' value='Sign Up' className='button' />
           </form>
         ) : (
           <form className='form' onSubmit={formik.handleSubmit}>
-            <h1>login</h1>
-            <label>username</label>
-            <input value={formik.values.username} onChange={formik.handleChange} type='text' name='username' />
-            <label>password</label>
-            <input value={formik.values.password} onChange={formik.handleChange} type='password' name='password' />
-            <input type='submit' value='Login' className='button' />
+            <h1 className='title text-white' >login</h1>
+            <h4 className='title text-white py-1'>username</h4 >
+            <input value={formik.values.username} onChange={formik.handleChange} type='text' name='username' className='input' />
+            <h4 className='title text-white py-1'>password</h4 >
+            <input value={formik.values.password} onChange={formik.handleChange} type='password' name='password' className='input' />
+            <input type='submit' value='Login' className='button mb-1' />
           </form>
         )}
           <div className='form'>
-            <p>{signup ? "Returning?" : "Don't have an account?"}</p>
+            <p className='title text-white my-2' >{signup ? "Returning?" : "Don't have an account?"}</p>
             <button className="button" onClick={toggleSignup}>
               {signup ? "login" : "sign up"}
             </button>
           </div>
         </section>
+    </div>
     </div>
   )
 }

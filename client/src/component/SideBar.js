@@ -1,77 +1,57 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserContext, CartContext } from '../App';
 
-// import "../stylesheets/SideBar.css"
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
+import 'bootstrap/js/dist/dropdown'
+
+import "../stylesheets/SideBar.css"
 
 function SideBar() {
+  const { user, setUser } = useContext(UserContext)
 
   return (
-    <div className="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style={{ width: "280px" }}>
-      <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <svg className="bi me-2" width="40" height="32"><use xlinkHref="#bootstrap" /></svg>
-        <span className="fs-4">Sidebar</span>
-      </a>
-      <hr />
-      <ul className="nav nav-pills flex-column mb-auto">
-        <li className="nav-item">
-          <a href="/order" className="nav-link active" aria-current="page">
-            <svg className="bi me-2" width="16" height="16"><use xlinkHref="/order" /></svg>
-            Home
-          </a>
-        </li>
-        <li>
-          <a href="#" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16"><use xlinkHref="#speedometer2" /></svg>
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a href="#" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16"><use xlinkHref="#table" /></svg>
-            Orders
-          </a>
-        </li>
-        <li>
-          <a href="#" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16"><use xlinkHref="#grid" /></svg>
-            Products
-          </a>
-        </li>
-        <li>
-          <a href="#" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16"><use xlinkHref="#people-circle" /></svg>
-            Customers
-          </a>
-        </li>
-      </ul>
-      <hr />
-      <div className="dropdown">
-        <a href="#" className="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="https://github.com/mdo.png" alt="" width="32" height="32" className="rounded-circle me-2" />
-          <strong>mdo</strong>
+    <div className="col-md-2 d-flex justify-content-between flex-column SideBar" >
+      <div>
+        <a className='text-decoration-none text-white d-flex align-itemcenter ms-3 mt-2'>
+          <i className="fs-4 bi"> </i>
+          {/* <Link to = "/order" className="ms-1 fs-2 fw-light"> </Link> */}
+          <span className="ms-1 fs-2 fw-light" > Manage Flow </span>
         </a>
-        <ul className="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-          <li><a className="dropdown-item" href="#">New project...</a></li>
-          <li><a className="dropdown-item" href="#">Settings</a></li>
-          <li><a className="dropdown-item" href="#">Profile</a></li>
-          <li><hr className="dropdown-divider" /></li>
-          <li><a className="dropdown-item" href="#">Sign out</a></li>
-        </ul>
+        <hr className="text-white" />
+          <ul class="nav nav-pills flex-column">
+            <li class="nav-item text-white fs-4 my-1">
+              <Link to = "/inventory" class = "nav-link text-white fs-5" aria-current="page"> 
+                <i className="bi bi-box-seam"/>
+                <span className="ms-3"> Inventory </span>
+              </Link>
+            </li>
+            <li class="nav-item text-white fs-4 my-1">
+              <Link to = "/categories" class = "nav-link text-white fs-5" aria-current="page"> 
+                <i className="bi bi-grid"/>
+                <span className="ms-3"> Categories </span>
+              </Link>
+            </li>
+            <li class="nav-item text-white fs-4 my-1">
+              <Link to = "/order" class = "nav-link text-white fs-5" aria-current="page"> 
+                <i className="bi bi-cart3"/>
+                <span className="ms-3"> Order </span>
+              </Link>
+            </li>
+          </ul>
       </div>
-    </div>
+      <div class="pb-3">
+        <Link to = "/user-page" class="dropdown-item">
+        <a class="text-decpration-none text-white p-3 ">
+              <i className="bi bi-person-circle ms-1"  > </i> 
+              <span className="ms-2 fs-4"> {user.username} </span>
+            </a>
+            </Link>
+      </div>
+      </div>
   );
 }
 
 export default SideBar;
-    // <nav className="sidebar">
-    //   <Link to = "/inventory">
-    //     <p> Inventory </p>
-    //   </Link>
-    //   <Link to = "/search">
-    //     <p> Search </p>
-    //   </Link>
-    //   <Link to = "/order">
-    //     <p> Order ({cartOrder.length}) </p>
-    //   </Link>
-
-    // </nav> 
