@@ -14,7 +14,7 @@ function ItemCard() {
   const { user, setUser } = useContext(UserContext)
 
   const [ item, setItem ] = useState([])
-  const { name, price, par_level, stock } = item
+  const { name, price, par_level, stock, image } = item
 
   const cartOrder =  user.order[0]
 
@@ -139,6 +139,7 @@ function ItemCard() {
       .then((response) => response.json())
       .then(() => {
         toggleEditngItem();
+        // window.location.reload()
       })
       .catch((error) => {
         console.error("Error:", error)
@@ -188,8 +189,8 @@ return (
             <div className="card-horizontal">
               <img
                 className="card-image"
-                src="https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg"
-                alt="Card image cap"
+                src={image}
+                alt={name}
               />
 
               <div className="card-body" >

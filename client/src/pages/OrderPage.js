@@ -23,7 +23,7 @@ function OrderPage() {
       const initialSubtotal = orderItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
       setCurrSubtotal(initialSubtotal)
     }
-  }, [user, orderItems])
+  },  [user, orderItems] )
   
   const fetchOrderDetails = () => {
     if (user) {

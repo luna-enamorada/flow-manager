@@ -11,7 +11,7 @@ import "../stylesheets/OrderItem.css"
 
 function OrderItem({item, quantity, updateTotalValue, removeFromOrder }) {
   const { user } = useContext(UserContext)
-  const { id, name, price, par_level, stock } = item
+  const { id, name, price, par_level, stock, image } = item
 
   const [updatedPrice, setUpdatedPrice] = useState(quantity * price);
 
@@ -58,8 +58,8 @@ function OrderItem({item, quantity, updateTotalValue, removeFromOrder }) {
     <div class="row">
       <div class="col-md-2">
         {/* Change the Image please <33 */}
-        <img src="https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg"
-          className='order-image' alt='should-be-name' />
+        <img src={image}
+          className='order-image' alt={name} />
       </div>
       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
         <p class="text-muted mb-0">{name}</p>

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import "../stylesheets/Item.css"
 
 function Item({ item }) {
-  const { id, name, price, par_level, stock, created_at } = item
+  const { id, name, price, par_level, stock, created_at, image } = item
   const navigate = useNavigate(); 
 
   function handleClick() {
@@ -26,8 +26,8 @@ function Item({ item }) {
             <div className="card-horizontal">
               <img
                 className="card-image"
-                src="https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg"
-                alt="Card image cap"
+                src= {image}
+                alt= {name}
               />
               <div className="card-body" >
                 <h3 className="display-6 py-2" style={{color: stock < par_level ? '#f92828' : 'inherit', }} >{name}</h3>

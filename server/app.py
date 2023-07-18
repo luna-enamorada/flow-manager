@@ -139,6 +139,7 @@ class Items( Resource ):
             new_item = Item(
                 name = rq['name'] ,
                 price = rq['price'] ,
+                image = rq['image'] ,
                 par_level = rq['par_level'] ,
                 user_id = rq['user_id'],
                 category_id = rq['category_id'],

@@ -29,6 +29,8 @@ function ItemForm(){
     name: yup.string().required('Name is required.'),
     price: yup.number().required('Price is required.'),
     par_level: yup.number().required('Par level is required.'),
+    stock: yup.number(),
+    image: yup.string()
   });
 
   const formik = useFormik({
@@ -39,6 +41,7 @@ function ItemForm(){
       stock: 0,
       user_id: user.id,
       category_id: null, 
+      image: ' '
     },
     validationSchema: formSchema,
     onSubmit: (values, actions) => {
@@ -106,8 +109,8 @@ function ItemForm(){
 <div class="form-group">
   <label class="col-md-6 control-label" for="textinput">Par Level</label>  
   <div class="col-md-6">
-  <input id="textinput" name="stock" type="number" placeholder="par level" class="form-control input-md" 
-  value={formik.values.stock} onChange={formik.handleChange} />
+  <input id="textinput" name="par_level" type="number" placeholder="par level" class="form-control input-md" 
+  value={formik.values.par_level} onChange={formik.handleChange} />
   </div>
 </div>
 <div class="form-group">
@@ -126,13 +129,13 @@ function ItemForm(){
   </div>
 </div>
 
-{/* <!-- File Button -->  */}
-{/* <div class="form-group">
-  <label class="col-md-6 control-label" for="filebutton">Image</label>
+<div class="form-group">
+  <label class="col-md-6 control-label" for="textinput">Image</label>  
   <div class="col-md-6">
-    <input id="filebutton" name="filebutton" class="input-file" type="file" />
+  <input id="textinput" name="image" type="text" placeholder="image" class="form-control input-md"
+  value={formik.values.image} onChange={formik.handleChange}/>
   </div>
-</div> */}
+</div>
 
 <div className="form-group">
                       <label className="col-md-4 control-label" htmlFor="button1id"></label>
@@ -160,22 +163,3 @@ function ItemForm(){
   );
 }
 export default ItemForm
-
-// <section>
-// <form className="form" onSubmit={formik.handleSubmit}>
-//   <h1>Create a New Item</h1>
-//   <label>name</label>
-//   <input value={formik.values.name} onChange={formik.handleChange} type="text" name="name" />
-//   <label>price $</label>
-//   <input value={formik.values.price} onChange={formik.handleChange} type="number" name="price" />
-//   <label>par level</label>
-//   <input value={formik.values.par_level} onChange={formik.handleChange} type="number" name="par_level" />
-//   <label>current stock</label>
-//   <input value={formik.values.stock} onChange={formik.handleChange} type="number" name="stock" />
-//   <select value={formik.values.category_id} onChange={handleSelect} name="category_id">
-//     {categoriesDisplay}
-//   </select>
-//   <input type="submit" value="create" className="button" />
-//   <Link to={{ pathname: '/inventory' }}> Cancel </Link>
-// </form>
-// </section>

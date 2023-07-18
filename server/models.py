@@ -193,7 +193,7 @@ class Item( db.Model, SerializerMixin ):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    # image = db.Column(db.LargeBinary )
+    image = db.Column(db.String )
     par_level = db.Column(db.Integer, nullable=False)
     stock = db.Column(db.Integer)
 

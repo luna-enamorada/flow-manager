@@ -59,7 +59,8 @@ function Categories(){
             )}
           </div>
           <div className="card_image">
-            <img src="https://bellyfull.net/wp-content/uploads/2020/07/Homemade-Caramel-Sauce-Recipe-blog.jpg" alt="Category" />
+          {category.item[0] && category.item[0].image && (
+          <img src={category.item[0].image} alt="Category" /> )}
             <img src="https://i.stack.imgur.com/1hCKa.png" alt="transparent" />
           </div>
         </div>
