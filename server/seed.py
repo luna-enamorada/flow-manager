@@ -14,18 +14,34 @@ if __name__ == '__main__':
     fake = Faker()
     with app.app_context():
         print("Starting seed...")
-        # Seed code goes here!
-        # User.query.delete()
+        User.query.delete()
         OrderDetail.query.delete()
         Order.query.delete()
         Item.query.delete()
         Category.query.delete()
+
+        user = User(
+            name = 'melissa',
+            username = 'coffeeyum',
+            _password_hash = 'password',
+            email = 'melissaelizn@gmail.com',
+            budget = 1000
+        )
+        db.session.add(user)
+        db.session.commit()
 
         od = Order(
             total = 9000,
             user_id = 1
         )
         db.session.add(od)
+        db.session.commit()
+
+        c1 = Category( 
+            name = 'syrup',
+            user_id = 1
+        )
+        db.session.add(c1)
         db.session.commit()
 
         i1 = Item( name = 'caramel', price = 7, par_level = 10, user_id = 1, category_id = 1, stock = 7 )
@@ -57,10 +73,4 @@ if __name__ == '__main__':
             order_id = 1
         )
         db.session.add(o)
-        db.session.commit()
-
-        c1 = Category( 
-            name = 'syrup'
-        )
-        db.session.add(c1)
         db.session.commit()

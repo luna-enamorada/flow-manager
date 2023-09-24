@@ -115,7 +115,7 @@ function Login() {
           <div className='form'>
             <p className='title text-white my-2' >{signup ? "Returning?" : "Don't have an account?"}</p>
             <button className="button" onClick={toggleSignup}>
-              {signup ? "login" : "sign up"}
+              {signup ? "Login" : "Sign Up"}
             </button>
           </div>
         </section>

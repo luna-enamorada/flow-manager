@@ -26,6 +26,7 @@ class User( db.Model, SerializerMixin ):
         '-stock.user',
         '-stock.item'
         '-updated_at',
+        '-category'
         )
 
     id = db.Column(db.Integer, primary_key=True)
@@ -42,6 +43,7 @@ class User( db.Model, SerializerMixin ):
     #### relationships
     order = db.relationship( 'Order', back_populates = 'user', cascade = 'all, delete-orphan' )
     item = db.relationship( 'Item', back_populates = 'user', cascade = 'all, delete-orphan' )
+    category = db.relationship( 'Category', back_populates = 'user', cascade = 'all, delete-orphan' )
 
     @classmethod
     def find(cls, id):
@@ -230,16 +232,20 @@ class Category( db.Model, SerializerMixin ):
         '-item.category',
         '-created_at',
         '-updated_at',
+        '-user'
     )
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable = False )
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     #### relationships
     item = db.relationship( 'Item', back_populates = 'category' )
+    user = db.relationship( 'User', back_populates = 'category' )
 
     @classmethod
     def find(cls, id):

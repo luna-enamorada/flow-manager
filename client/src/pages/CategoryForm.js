@@ -9,7 +9,7 @@ import SideBar from '../component/SideBar';
 
 function CategoryForm(){
   const navigate = useNavigate();
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   const formSchema = yup.object({
     name: yup.string().required('Name is required.'),
@@ -18,6 +18,7 @@ function CategoryForm(){
   const formik = useFormik({
     initialValues: {
       name: '',
+      user_id: user.id
     },
     validationSchema: formSchema,
     onSubmit: (values, actions) => {

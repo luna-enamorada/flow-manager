@@ -223,6 +223,7 @@ class Categories( Resource ):
         try:
             new_category = Category(
                 name = rq['name'] ,
+                user_id = rq['user_id']
             )
             db.session.add(new_category)
             db.session.commit()
@@ -284,6 +285,14 @@ class ItemsByCategoryId (Resource):
         response = make_response( items, 200 )
         return response
 api.add_resource( ItemsByCategoryId, '/itemsByCategoryId/<int:id>')
+
+class CategoriesByUserID (Resource):
+    def get(self, id):
+        categories = [ category.to_dict() for category in Category.query.filter_by(user_id=id) ]
+        response = make_response( categories, 200 )
+        return response
+api.add_resource( CategoriesByUserID, '/CategoriesByUserID/<int:id>')
+
 
 
 ### orders
@@ -510,3 +519,4 @@ api.add_resource( OrderDetailsByItemID, '/orderDetailsByItemID/<int:id>')
 
 if __name__ == '__main__':
     app.run( port = 5000, debug=True )
+
