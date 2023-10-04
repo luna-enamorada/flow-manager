@@ -5,9 +5,9 @@ Manage Flow is designed specifically with managers in mind who want to efficient
 ## Features ✨
 Users will be able to
 - Sign up/Log in to create an inventory of items.
-- Users can sort items into catagories. 
+- Users can create unique catagories and sort items into them. 
 - Provide up-to-date information on inventory levels. Set par levels for each item in your inventory, ensuring that you never run out of critical items or overstock unnecessarily
-- When items reach their par levels, the app will automatically generate optimized purchase orders
+- Generate orders based on user-set par levels 
 
 // Stretch Goals 🏆
 - Receive alerts when stock becomes low and when order dates come up
