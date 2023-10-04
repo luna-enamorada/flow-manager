@@ -17,21 +17,27 @@ function OrderPage() {
 
   const cartOrder = user.order[0] 
 
+  const [total, setTotal] = useState(false)
+
   useEffect(() => {
     if (user) {
       fetchOrderDetails();
-      const initialSubtotal = orderItems.reduce((total, item) => total + item.item.price * item.quantity, 0);
-      setCurrSubtotal(initialSubtotal)
     }
-  },  [user, orderItems] )
+  },  [user] )
+
+  useEffect(() => {
+    const initialSubtotal = orderItems.reduce((total, item) => total + item.item.price * item.quantity, 0)
+    setCurrSubtotal(initialSubtotal)
+    setTotal(false)
+  }, [orderItems] )
   
   const fetchOrderDetails = () => {
     if (user) {
       fetch(`http://127.0.0.1:5000/orderDetailsByOrderID/${user.order[0].id}`)
         .then((r) => r.json())
         .then((data) => {
-          // console.log( data)
-          setOrderItems(data);
+          setOrderItems(data)
+          setTotal(true)
         })
         .catch((error) => {
           console.error('Error fetching order details:', error);
@@ -40,8 +46,6 @@ function OrderPage() {
       console.warn('Unable to fetch order details. cartOrder is not valid.');
     }
   }
-
-
 
   const removeFromOrder = ( id ) => {
     return fetch(`http://127.0.0.1:5000/orderDetailsByItemID/${id}`, {
@@ -132,11 +136,7 @@ function OrderPage() {
       },
       body: JSON.stringify(newStock),
     })
-      .then(response => {response.json()})
-      .then(data => {
-        // console.log(data)
-      })  
-  }
+      .then(response => {response.json()})}
     
   const updateInventoryStock = () => {
     orderItems.forEach((orderItem) => {
@@ -180,7 +180,6 @@ function OrderPage() {
     <SideBar />
     <div className="d-flex offset-md-2">
         <div className="flex-grow-1">
-          {/* Content of order page */}
           {orderItems.length > 0 ? ( 
     <div className="container py-5">
       <div className="row">
