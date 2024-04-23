@@ -11,6 +11,7 @@ import CategoryCard from './component/CategoryCard';
 import CategoryForm from './pages/CategoryForm';
 import OrderPage from './pages/OrderPage';
 import UserPage from './pages/UserPage';
+import SuccessScreen from './pages/SuccessScreen';
 
 import "./stylesheets/App.css"
 
@@ -21,22 +22,6 @@ function App() {
   const [ user, setUser ] = useState({})
   const [loading, setLoading] = useState(true);
 
-  // const [ cartOrder, setCartOrder ] = useState({})
-
-  // useEffect(() => {
-  //   fetch('http://127.0.0.1:5000/authorized-session')
-  //     .then(r => r.json())
-  //     .then(data => {
-  //       console.log(data)
-  //       setUser(data);
-  //       localStorage.setItem('user', JSON.stringify(data)); 
-  //     })
-  //     .catch(error => console.log(error))
-  //   const storedUser = localStorage.getItem('user');
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
   useEffect(() => {
     fetch('http://127.0.0.1:5000/authorized-session')
       .then(r => r.json())
@@ -60,18 +45,6 @@ function App() {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-
-  // useEffect(() => {
-  //   if (user) {
-  //     fetch(`http://127.0.0.1:5000/orderByUserId/${user.id}`)
-  //       .then(r => r.json())
-  //       .then(data => {
-  //         setCartOrder(data);
-  //         console.log(data)
-  //       });
-  //   }
-  // }, [user]);
     
   return (
       <UserContext.Provider value={{ user, setUser }}>
@@ -90,6 +63,7 @@ function App() {
               <Route path = "/category-form" element = { <CategoryForm /> }/>
               <Route path = "/order" element = { <OrderPage /> }/>
               <Route path = "/user-page" element = { <UserPage /> }/>
+              <Route path = "/success" element = { <SuccessScreen /> }/>
             </Routes>
           </BrowserRouter>
         )}

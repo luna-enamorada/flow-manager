@@ -5,6 +5,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from config import db, bcrypt
 
+import base64
+
 
 # ~~~~~~~~~~~~~~~~~~~ Model Tables ~~~~~~~~~~~~~~~~~~~
 # User, Budget, OrderDetail, Order, Item, Category, Stock

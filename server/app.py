@@ -4,7 +4,10 @@ from flask_restful import Resource, abort
 from config import app, db, api
 from models import User, OrderDetail, Order, Item, Category
 from werkzeug.exceptions import NotFound, UnprocessableEntity, Unauthorized
+from werkzeug.utils import secure_filename
+
 from secret import key
+import base64
 
 app.secret_key = key
 
@@ -125,13 +128,19 @@ class UsersByID( Resource ):
         
 api.add_resource( UsersByID, '/users/<int:id>' )
 
+def save_image_to_database(base64_image_data):
+# Decode the base64 image data
+    decoded_image_data = base64.b64decode(base64_image_data)
+    
+def get_image_from_database(binary_image_data):
+    encoded_image_data = base64.b64encode(binary_image_data).decode('utf-8')
+    return encoded_image_data
 
 class Items( Resource ):
     def get(self):
         items = [ item.to_dict() for item in Item.query.all() ]
         response = make_response( items, 200 )
         return response
-
 
     def post( self ):
         rq = request.get_json()
@@ -145,6 +154,7 @@ class Items( Resource ):
                 category_id = rq['category_id'],
                 stock = rq['stock']
             )
+
             db.session.add(new_item)
             db.session.commit()
             new_item_dict = new_item.to_dict()
@@ -153,6 +163,7 @@ class Items( Resource ):
         except:
             response = make_response( { "error": ["validation errors"]}, 400)
             return response
+
 api.add_resource( Items, '/items')
 
 
